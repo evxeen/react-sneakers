@@ -8,9 +8,9 @@ function Header() {
           <p className="opacity-5">Магазин лучших кроссовок</p>
         </div>
       </div>
-      <ul className="d-flex">
-        <li className="mr-30">
-          <img width={18} height={18} src="./img/cart.svg" alt="Card" />
+      <ul className="d-flex ">
+        <li className="mr-30 cu-p">
+          <img width={18} height={18} src="/img/cart.svg" alt="Card" />
           <span>1205 руб.</span>
         </li>
         <li>
