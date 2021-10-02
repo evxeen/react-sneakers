@@ -1,3 +1,4 @@
+import React from "react";
 import Card from "./components/Card";
 import Header from "./components/Header";
 import Drawer from "./components/Drawer";
@@ -27,7 +28,17 @@ const arr = [
 ];
 
 function App() {
+  const [items, setItems] = useState([]);
+
   const [cardOpened, setCardOpened] = useState(false);
+
+  React.useEffect(async () => {
+    const res = await fetch(
+      "https://6158bb2d5167ba00174bbbcf.mockapi.io/items"
+    );
+    const items = await res.json();
+    setItems(items);
+  }, []);
 
   return (
     <div className="wrapper clear">
@@ -42,8 +53,8 @@ function App() {
           </div>
         </div>
 
-        <div className="d-flex">
-          {arr.map((obj) => (
+        <div className="d-flex flex-wrap">
+          {items.map((obj) => (
             <Card
               title={obj.title}
               price={obj.price}
