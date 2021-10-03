@@ -24,8 +24,12 @@ function App() {
 
   const onAddToCart = (obj) => {
     axios.post("https://6158bb2d5167ba00174bbbcf.mockapi.io/cart", obj);
-
     setCartItems((prev) => [...prev, obj]);
+  };
+
+  const onRemoveItem = (id) => {
+    axios.delete(`https://6158bb2d5167ba00174bbbcf.mockapi.io/cart/${id}`);
+    setCartItems((prev) => prev.filter((item) => item.id !== id));
   };
 
   const onChangeSearch = (event) => {
@@ -35,7 +39,11 @@ function App() {
   return (
     <div className="wrapper clear">
       {cartOpened && (
-        <Drawer items={cartItems} onClose={() => setCartOpened(false)} />
+        <Drawer
+          items={cartItems}
+          onClose={() => setCartOpened(false)}
+          onRemove={onRemoveItem}
+        />
       )}
       <Header onClickCard={() => setCartOpened(true)} />
       <div className="content p-40">
