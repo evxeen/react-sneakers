@@ -13,28 +13,42 @@ function App() {
   const [favorites, setFavorites] = React.useState([]);
   const [searchValue, setSearchValue] = React.useState("");
   const [cartOpened, setCartOpened] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
-    axios
-      .get("https://6158bb2d5167ba00174bbbcf.mockapi.io/items")
-      .then((res) => {
-        setItems(res.data);
-      });
-    axios
-      .get("https://6158bb2d5167ba00174bbbcf.mockapi.io/cart")
-      .then((res) => {
-        setCartItems(res.data);
-      });
-    axios
-      .get("https://6158bb2d5167ba00174bbbcf.mockapi.io/favorites")
-      .then((res) => {
-        setFavorites(res.data);
-      });
+    async function fetchData() {
+      const cartResponse = await axios.get(
+        "https://6158bb2d5167ba00174bbbcf.mockapi.io/cart"
+      );
+      const favoritesResponse = await axios.get(
+        "https://6158bb2d5167ba00174bbbcf.mockapi.io/favorites"
+      );
+      const itemResponse = await axios.get(
+        "https://6158bb2d5167ba00174bbbcf.mockapi.io/items"
+      );
+      setIsLoading(false);
+
+      setCartItems(cartResponse.data);
+      setFavorites(favoritesResponse.data);
+      setItems(itemResponse.data);
+    }
+    fetchData();
   }, []);
 
   const onAddToCart = (obj) => {
-    axios.post("https://6158bb2d5167ba00174bbbcf.mockapi.io/cart", obj);
-    setCartItems((prev) => [...prev, obj]);
+    try {
+      if (cartItems.find((item) => +item.id === +obj.id)) {
+        axios.delete(
+          `https://6158bb2d5167ba00174bbbcf.mockapi.io/cart/${obj.id}`
+        );
+        setCartItems((prev) => prev.filter((item) => +item.id !== +obj.id));
+      } else {
+        axios.post("https://6158bb2d5167ba00174bbbcf.mockapi.io/cart", obj);
+        setCartItems((prev) => [...prev, obj]);
+      }
+    } catch (error) {
+      console.log("Не удалось добавить в корзину :(");
+    }
   };
 
   const onRemoveItem = (id) => {
@@ -81,11 +95,13 @@ function App() {
       <Route path="/" exact>
         <Home
           items={items}
+          cartItems={cartItems}
           searchValue={searchValue}
           setSearchValue={setSearchValue}
           onChangeSearchInput={onChangeSearchInput}
           onAddToFavorite={onAddToFavorite}
           onAddToCart={onAddToCart}
+          isLoading={isLoading}
         />
       </Route>
 
